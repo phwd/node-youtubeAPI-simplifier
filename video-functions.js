@@ -1,11 +1,12 @@
 var Promise = require('bluebird'),
     wrapper = require('./wrapper'),
+    moment = require('moment'),
     videosWrapper = wrapper.videos;
 
 var videoFunctions = {
     _getDetailsForVideoIds: function (videoIds, pageToken) {
         var params = {
-            part: 'snippet,statistics',
+            part: 'snippet, contentDetails',
             maxResults: 50,
             id: ''
         };
@@ -30,7 +31,8 @@ var videoFunctions = {
 
             for(var i = 0; i < items.length; i++){
                 var video = items[i],
-                    snippet = video.snippet;
+                    snippet = video.snippet,
+                    duration = moment.duration(video.contentDetails.duration, moment.ISO_8601);
 
                 videoDetails.push({
                     id: video.id,
@@ -38,7 +40,7 @@ var videoFunctions = {
                     description: snippet.description,
                     publishedAt: snippet.publishedAt,
                     thumbnails: snippet.thumbnails,
-                    statistics: video.statistics,
+                    duration: duration.asSeconds(),
                     channelId: snippet.channelId
                 });
             }
